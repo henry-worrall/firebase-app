@@ -9,6 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { TaskComponent } from './task/task.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { TaskComponent } from './task/task.component';
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]
