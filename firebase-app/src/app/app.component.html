@@ -2,3 +2,4 @@
   <mat-icon>local_fire_department</mat-icon>
   <span>Henry's Fire App</span>
 </mat-toolbar>
+<app-task *ngFor="let task of todo" [task]="task"></app-task>
