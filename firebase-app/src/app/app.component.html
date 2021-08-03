@@ -1,8 +1,9 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="{{header_color}}">
   <mat-icon>local_fire_department</mat-icon>
   <span>Henry's Fire App</span>
 </mat-toolbar>
 <div class="content-wrapper">
+  <h2>{{remote_param}}</h2>
   <button (click)="newTask()" mat-button>
     <mat-icon>add</mat-icon> Add Task
   </button>

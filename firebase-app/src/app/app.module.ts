@@ -20,6 +20,7 @@ import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
+import { AngularFireRemoteConfigModule, DEFAULTS, SETTINGS } from '@angular/fire/remote-config';
 
 @NgModule({
   declarations: [
@@ -41,9 +42,16 @@ import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
     FormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAnalyticsModule
+    AngularFireAnalyticsModule,
+    AngularFireRemoteConfigModule
   ],
-  providers: [],
+  providers: [
+    { provide: DEFAULTS, useValue: {
+       remote_param_2: "Default from angular",
+       header_color: "primary" 
+      } },
+    { provide: SETTINGS, useValue: {minimumFetchIntervalMillis: 60_000}} 
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

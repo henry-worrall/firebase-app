@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog.component';
 import { AngularFirestore, AngularFirestoreCollection  } from '@angular/fire/firestore';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { AngularFireRemoteConfig } from '@angular/fire/remote-config';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject<Task[]>([]);
@@ -61,7 +62,49 @@ export class AppComponent {
   );
 }
 
-  constructor(private dialog: MatDialog, private store: AngularFirestore) {}
+  header_color:any;
+  remote_param:any;
+  constructor(private dialog: MatDialog, private store: AngularFirestore, remoteConfig: AngularFireRemoteConfig) {
+    /* ======================================================
+    experiment to test how remote config properties change. 
+    ========================================================= */
+
+
+    // retrieves default remote config params and sets them to variables
+    // 1. header_color
+    console.log(remoteConfig.getAll())
+    remoteConfig.getString('header_color').then(val => {
+      this.header_color = val
+    })
+
+    // 2. parameter_string
+    remoteConfig.getString('remote_param_2').then(val => {
+      this.remote_param = val
+    })
+    
+    // Fetchs the remote parameters from firebase console 
+    remoteConfig.fetchAndActivate()
+    
+    // After five seconds, resets default parameters with remote parameters  
+    setTimeout(() => {
+      console.log(remoteConfig.getAll());
+      remoteConfig.getString('header_color').then(val => {
+        this.header_color = val
+      });
+      remoteConfig.getString('remote_param_2').then(val => {
+        this.remote_param = val
+      }) 
+    }, 5_000);
+
+    setTimeout(() => {
+      console.log(this.header_color)
+    }, 5_000);
+
+    /* ===================================== 
+                  END Experiment
+    ========================================*/
+
+  };
 
   newTask(): void {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
