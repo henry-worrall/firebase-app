@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Task } from './task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import { AngularFirestore, AngularFirestoreCollection  } from '@angular/fire/fir
 import { Observable, BehaviorSubject } from 'rxjs';
 import { AngularFireRemoteConfig } from '@angular/fire/remote-config';
 import { AngularFireAnalytics } from '@angular/fire/analytics';
+import { UserDialogComponent, UserDialogResult } from './user-dialog/user-dialog.component';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject<Task[]>([]);
@@ -21,7 +22,7 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   todo = getObservable(this.store.collection('todo')) as Observable<Task[]>;
   inProgress = getObservable(this.store.collection('inProgress')) as Observable<Task[]>;
   done = getObservable(this.store.collection('done')) as Observable<Task[]>;
@@ -64,7 +65,7 @@ export class AppComponent {
     event.previousIndex,
     event.currentIndex
   );
-}
+  }
 
   header_color:any;
   remote_param:any;
@@ -129,4 +130,21 @@ export class AppComponent {
       .subscribe((result: TaskDialogResult) => this.store.collection('todo').add(result.task));
       dialogRef.afterClosed().subscribe((result: TaskDialogResult) => this.analytics.logEvent('new_task', {'title': result.task.title, 'description': result.task.description}))
   };
+
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.setName()
+    }, 10_000);
+  }
+
+  user_name: string;
+  setName(): void {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '400px',
+      data: "",
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: UserDialogResult) => this.user_name = result.userName);
+  }a
 }

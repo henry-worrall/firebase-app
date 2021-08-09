@@ -1,0 +1,11 @@
+<mat-form-field>
+    <mat-label>Your Name</mat-label>
+    <input matInput cdkFocusInitial [(ngModel)]="userName" />
+  </mat-form-field>
+  
+  <div mat-dialog-actions>
+    <button 
+    mat-button
+    color="primary"
+    [mat-dialog-close]="{ userName: userName }">OK</button>
+  </div>
