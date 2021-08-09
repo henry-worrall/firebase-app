@@ -6,6 +6,7 @@ import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog
 import { AngularFirestore, AngularFirestoreCollection  } from '@angular/fire/firestore';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { AngularFireRemoteConfig } from '@angular/fire/remote-config';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject<Task[]>([]);
@@ -36,8 +37,10 @@ export class AppComponent {
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
       if (result.delete) {
         this.store.collection(list).doc(task.id).delete();
+        this.analytics.logEvent('delete_task', {'title': result.task.title, 'description': result.task.description});
       } else {
         this.store.collection(list).doc(task.id).update(task);
+        this.analytics.logEvent('update_task', {'title': result.task.title, 'description': result.task.description});
       }
     });
   }
@@ -51,7 +54,8 @@ export class AppComponent {
     const promise = Promise.all([
       this.store.collection(event.previousContainer.id).doc(item.id).delete(),
       this.store.collection(event.container.id).add(item),
-    ]);
+    ])
+    this.analytics.logEvent('move_task', {'title': item.title, 'description': item.description, 'from_column': event.previousContainer.id, 'to_column': event.container.id});;
     return promise;
   });
   transferArrayItem(
@@ -64,7 +68,9 @@ export class AppComponent {
 
   header_color:any;
   remote_param:any;
-  constructor(private dialog: MatDialog, private store: AngularFirestore, remoteConfig: AngularFireRemoteConfig) {
+  private analytics: AngularFireAnalytics
+  constructor(private dialog: MatDialog, private store: AngularFirestore, 
+    remoteConfig: AngularFireRemoteConfig, analytics: AngularFireAnalytics) {
     /* ======================================================
     experiment to test how remote config properties change. 
     ========================================================= */
@@ -104,6 +110,11 @@ export class AppComponent {
                   END Experiment
     ========================================*/
 
+
+    /* ======================================================
+                      Initialise custom logging 
+    ========================================================= */
+    this.analytics = analytics
   };
 
   newTask(): void {
@@ -116,5 +127,6 @@ export class AppComponent {
     dialogRef
       .afterClosed()
       .subscribe((result: TaskDialogResult) => this.store.collection('todo').add(result.task));
-  }
+      dialogRef.afterClosed().subscribe((result: TaskDialogResult) => this.analytics.logEvent('new_task', {'title': result.task.title, 'description': result.task.description}))
+  };
 }
