@@ -145,6 +145,9 @@ export class AppComponent implements OnInit {
     });
     dialogRef
       .afterClosed()
+      .subscribe((result: UserDialogResult) => this.analytics.setUserProperties({'CD - Username':result.userName}));
+    dialogRef
+      .afterClosed()
       .subscribe((result: UserDialogResult) => this.user_name = result.userName);
   }a
 }
